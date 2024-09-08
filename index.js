@@ -5,7 +5,7 @@ function firstBeatsSecond(first, second) {
   const secondPos = ORDER.findIndex((thing) => thing == second);
 
   let posAfterFirstPos = firstPos + 1;
-  if (posAfterFirstPos >= ORDER.length - 1) {
+  if (posAfterFirstPos > ORDER.length - 1) {
     posAfterFirstPos = 0;
   }
 
