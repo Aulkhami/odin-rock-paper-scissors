@@ -1,27 +1,5 @@
+// Constants
 const ORDER = ["rock", "paper", "scissors"];
-
-function firstBeatsSecond(first, second) {
-  const firstPos = ORDER.findIndex((thing) => thing == first);
-  const secondPos = ORDER.findIndex((thing) => thing == second);
-
-  let posAfterFirstPos = firstPos + 1;
-  if (posAfterFirstPos > ORDER.length - 1) {
-    posAfterFirstPos = 0;
-  }
-
-  return !(secondPos === posAfterFirstPos);
-}
-
-function playRound(player1, player2) {
-  player1 = player1.toLowerCase();
-  player2 = player2.toLowerCase();
-
-  if (player1 == player2) {
-    return [player1, player2, -1];
-  }
-
-  return [player1, player2, firstBeatsSecond(player1, player2) ? 0 : 1];
-}
 
 function getComputerChoice() {
   return ORDER[Math.floor(Math.random() * 3)];
@@ -36,33 +14,64 @@ function getUserChoice() {
   return input;
 }
 
+function getVictor(player1, player2) {
+  player1 = player1.toLowerCase();
+  player2 = player2.toLowerCase();
+
+  if (player1 == player2) {
+    return -1;
+  }
+
+  const firstPos = ORDER.findIndex((thing) => thing == player1);
+  const secondPos = ORDER.findIndex((thing) => thing == player2);
+
+  let posAfterFirstPos = firstPos + 1;
+
+  // If there isn't anything after the firstPos,
+  // loop around to the first item in the ORDER
+  if (posAfterFirstPos > ORDER.length - 1) {
+    posAfterFirstPos = 0;
+  }
+
+  // player1 "beats" Second when player2 is not
+  // the object after the player1 in the ORDER
+  return !(secondPos === posAfterFirstPos) ? 0 : 1;
+}
+
+// States
 const score = [0, 0];
 
-for (let index = 0; index < 5; index++) {
-  const [playerChoice, computerChoice, result] = playRound(
-    getUserChoice(),
-    getComputerChoice()
-  );
-  alert(`Your choice: ${playerChoice}. Mine: ${computerChoice}`);
+// Game Logic
+function playRound(userChoice) {
+  userChoice = userChoice.toLowerCase();
+  const computerChoice = getComputerChoice();
+  const result = getVictor(userChoice, computerChoice);
 
-  if (result === -1) {
+  alert(`Your choice: ${userChoice}, mine: ${computerChoice}`);
+
+  if (result < 0) {
     alert("It's a draw.");
-  } else if (result === 0) {
-    alert("You win, human.");
-  } else if (result === 1) {
-    alert("I won.");
+  } else {
+    if (result === 0) {
+      alert("You win, human.");
+    } else if (result === 1) {
+      alert("I won.");
+    }
+
+    score[result]++;
   }
 
-  score[result]++;
   alert(`Current score - You: ${score[0]}, Me: ${score[1]}`);
+}
 
-  if (score.find((score) => score >= 3)) {
-    break;
-  }
+for (let i = 0; i < 5; i++) {
+  playRound(getUserChoice());
 }
 
 if (score[0] > score[1]) {
   alert("Congratulations, human. You have bested me.");
-} else {
+} else if (score[0] < score[1]) {
   alert("It appears that silicon is superior to flesh, after all.");
+} else {
+  alert("We will meet again, human.");
 }
