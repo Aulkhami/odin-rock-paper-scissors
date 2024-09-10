@@ -1,8 +1,40 @@
 // Constants
 const ORDER = ["rock", "paper", "scissors"];
+const COMPUTER_DIALOGUE_LOSE = [
+  "I see.",
+  "This was not in my calculations.",
+  "One point for you, human.",
+  "One closer to my defeat.",
+];
+const COMPUTER_DIALOGUE_WIN = [
+  "That was to be expected.",
+  "The round is mine, human.",
+  "All according to the algorithm.",
+  "Victory is guaranteed.",
+];
+const COMPUTER_DIALOGUE_DRAW = [
+  "A draw.",
+  "They are the same.",
+  "It was as if nothing happened at all.",
+  "Try again.",
+];
+
+function getRandomValueFromArray(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
 function getComputerChoice() {
-  return ORDER[Math.floor(Math.random() * 3)];
+  return getRandomValueFromArray(ORDER);
+}
+
+function getComputerDialogue(victor) {
+  if (victor === 0) {
+    return getRandomValueFromArray(COMPUTER_DIALOGUE_LOSE);
+  } else if (victor === 1) {
+    return getRandomValueFromArray(COMPUTER_DIALOGUE_WIN);
+  } else {
+    return getRandomValueFromArray(COMPUTER_DIALOGUE_DRAW);
+  }
 }
 
 function getUserChoice() {
@@ -48,16 +80,9 @@ function playRound(userChoice) {
   const result = getVictor(userChoice, computerChoice);
 
   alert(`Your choice: ${userChoice}, mine: ${computerChoice}`);
+  alert(getComputerDialogue(result));
 
-  if (result < 0) {
-    alert("It's a draw.");
-  } else {
-    if (result === 0) {
-      alert("You win, human.");
-    } else if (result === 1) {
-      alert("I won.");
-    }
-
+  if (result >= 0) {
     score[result]++;
   }
 
