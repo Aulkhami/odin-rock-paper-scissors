@@ -73,30 +73,67 @@ function getVictor(player1, player2) {
 // States
 const score = [0, 0];
 
+// DOM Elements
+const body = document.querySelector("body");
+const playerDisplay = document.querySelector("#player");
+const computerDisplay = document.querySelector("#computer");
+const scoreDisplay = document.querySelector("#score");
+const computerDialogue = document.querySelector("#computer-comment");
+let choiceButtons = document.querySelector("#buttons");
+const resetButton = document.querySelector("#reset-game");
+
+let choiceButtonsClone;
+
 // Game Logic
 function playRound(userChoice) {
   userChoice = userChoice.toLowerCase();
   const computerChoice = getComputerChoice();
   const result = getVictor(userChoice, computerChoice);
 
-  alert(`Your choice: ${userChoice}, mine: ${computerChoice}`);
-  alert(getComputerDialogue(result));
+  playerDisplay.textContent = userChoice;
+  computerDisplay.textContent = computerChoice;
+  computerDialogue.textContent = getComputerDialogue(result);
 
   if (result >= 0) {
     score[result]++;
   }
 
-  alert(`Current score - You: ${score[0]}, Me: ${score[1]}`);
+  scoreDisplay.textContent = `${score[0]} : ${score[1]}`;
+
+  if (score.find((value) => value >= 5)) {
+    choiceButtonsClone = choiceButtons.cloneNode(true);
+    choiceButtons.remove();
+    choiceButtons = null;
+
+    if (score[0] > score[1]) {
+      computerDialogue.textContent =
+        "Congratulations, human. You have bested me.";
+    } else if (score[0] < score[1]) {
+      computerDialogue.textContent =
+        "It appears that silicon is superior to flesh, after all.";
+    } else {
+      computerDialogue.textContent = "We will meet again, human.";
+    }
+  }
 }
 
-for (let i = 0; i < 5; i++) {
-  playRound(getUserChoice());
-}
+choiceButtons.childNodes.forEach((button) => {
+  button.addEventListener("click", () => playRound(button.id));
+});
 
-if (score[0] > score[1]) {
-  alert("Congratulations, human. You have bested me.");
-} else if (score[0] < score[1]) {
-  alert("It appears that silicon is superior to flesh, after all.");
-} else {
-  alert("We will meet again, human.");
-}
+resetButton.addEventListener("click", () => {
+  if (!choiceButtons) {
+    body.insertBefore(choiceButtonsClone, resetButton.parentNode);
+
+    choiceButtons = choiceButtonsClone;
+    choiceButtonsClone = null;
+  }
+
+  choiceButtons.childNodes.forEach((button) => {
+    button.addEventListener("click", () => playRound(button.id));
+  });
+
+  score.forEach((_, index) => (score[index] = 0));
+  scoreDisplay.textContent = `${score[0]} : ${score[1]}`;
+  computerDialogue.textContent = "Let us begin.";
+});
